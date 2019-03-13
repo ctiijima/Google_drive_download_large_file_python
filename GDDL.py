@@ -4,23 +4,18 @@ import sys
 
 def download_file(id, destination):
     URL = "https://docs.google.com/uc?export=download"
-
     session = requests.Session()
-
     response = session.get(URL, params = { 'id' : id }, stream = True)
     token = confirm_token(response)
-
     if token:
         params = { 'id' : id, 'confirm' : token }
         response = session.get(URL, params = params, stream = True)
-
     save_response(response, destination)    
 
 def confirm_token(response):
     for key, value in response.cookies.items():
         if key.startswith('download_warning'):
             return value
-
     return None
 
 def save_response(response, destination):
