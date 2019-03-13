@@ -2,28 +2,28 @@ import requests
 import sys
 
 
-def download_file_from_google_drive(id, destination):
+def download_file(id, destination):
     URL = "https://docs.google.com/uc?export=download"
 
     session = requests.Session()
 
     response = session.get(URL, params = { 'id' : id }, stream = True)
-    token = get_confirm_token(response)
+    token = confirm_token(response)
 
     if token:
         params = { 'id' : id, 'confirm' : token }
         response = session.get(URL, params = params, stream = True)
 
-    save_response_content(response, destination)    
+    save_response(response, destination)    
 
-def get_confirm_token(response):
+def confirm_token(response):
     for key, value in response.cookies.items():
         if key.startswith('download_warning'):
             return value
 
     return None
 
-def save_response_content(response, destination):
+def save_response(response, destination):
     CHUNK_SIZE = 32768
 
     with open(destination, "wb") as f:
@@ -34,4 +34,4 @@ def save_response_content(response, destination):
 #arg1 == file token
 #arg2 == destination file name
 if __name__ == "__main__":
-    download_file_from_google_drive(sys.argv[1],sys.argv[2])
+    download_file(sys.argv[1],sys.argv[2])
